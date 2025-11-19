@@ -1,0 +1,80 @@
+<div class="container mt-4">
+  <h2>Gestión de Notas</h2>
+  
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input type="text" class="form-control" [(ngModel)]="filterValue" placeholder="Buscar por nombre..." (keyup.enter)="filterNotas()">
+        <button class="btn btn-outline-secondary" (click)="filterNotas()">Buscar</button>
+        <button class="btn btn-outline-secondary" (click)="filterValue=''; loadNotas()">Limpiar</button>
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-primary" (click)="openCreateForm()">+ Nueva Nota</button>
+    </div>
+  </div>
+
+  <div class="card mb-3" *ngIf="showForm">
+    <div class="card-header">
+      <h5>{{ isEditing ? 'Editar' : 'Nueva' }} Nota</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="saveNota()">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="formData.nombre" name="nombre" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Profesor</label>
+          <select class="form-select" [(ngModel)]="formData.idProfesor" name="idProfesor" required>
+            <option [value]="0">Seleccione un profesor</option>
+            <option *ngFor="let profesor of profesores" [value]="profesor.id">{{ profesor.nombre }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Estudiante</label>
+          <select class="form-select" [(ngModel)]="formData.idEstudiante" name="idEstudiante" required>
+            <option [value]="0">Seleccione un estudiante</option>
+            <option *ngFor="let estudiante of estudiantes" [value]="estudiante.id">{{ estudiante.nombre }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Valor</label>
+          <input type="number" step="0.01" class="form-control" [(ngModel)]="formData.valor" name="valor" required>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Profesor</th>
+          <th>Estudiante</th>
+          <th>Valor</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let nota of notas">
+          <td>{{ nota.id }}</td>
+          <td>{{ nota.nombre }}</td>
+          <td>{{ nota.nombreProfesor }}</td>
+          <td>{{ nota.nombreEstudiante }}</td>
+          <td>{{ nota.valor }}</td>
+          <td>
+            <button class="btn btn-sm btn-warning me-2" (click)="openEditForm(nota)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteNota(nota.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="container mt-4">
+  <h2>Gestión de Estudiantes</h2>
+  
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input type="text" class="form-control" [(ngModel)]="filterValue" placeholder="Buscar por nombre..." (keyup.enter)="filterEstudiantes()">
+        <button class="btn btn-outline-secondary" (click)="filterEstudiantes()">Buscar</button>
+        <button class="btn btn-outline-secondary" (click)="filterValue=''; loadEstudiantes()">Limpiar</button>
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-primary" (click)="openCreateForm()">+ Nuevo Estudiante</button>
+    </div>
+  </div>
+
+  <!-- Formulario Modal -->
+  <div class="card mb-3" *ngIf="showForm">
+    <div class="card-header">
+      <h5>{{ isEditing ? 'Editar' : 'Nuevo' }} Estudiante</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="saveEstudiante()">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="formData.nombre" name="nombre" required>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let estudiante of estudiantes">
+          <td>{{ estudiante.id }}</td>
+          <td>{{ estudiante.nombre }}</td>
+          <td>
+            <button class="btn btn-sm btn-warning me-2" (click)="openEditForm(estudiante)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteEstudiante(estudiante.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
