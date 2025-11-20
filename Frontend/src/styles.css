@@ -1,10 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
 }
 
 .navbar-brand {
   font-weight: bold;
+}
+
+/* Toast styles */
+.toast {
+  min-width: 300px;
+}
+
+/* Mejoras generales */
+.card {
+  border-radius: 10px;
+}
+
+.btn {
+  border-radius: 5px;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+/* Paginación */
+.pagination .page-link {
+  cursor: pointer;
+}
+
+/* Efectos hover para tarjetas */
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
 }

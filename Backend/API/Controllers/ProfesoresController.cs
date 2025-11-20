@@ -18,14 +18,16 @@ public class ProfesoresController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProfesorDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<ProfesorDto>>> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
         [FromQuery] string? orderBy = null,
         [FromQuery] string? filterBy = null,
         [FromQuery] string? filterValue = null)
     {
         try
         {
-            var profesores = await _service.GetAllAsync(orderBy, filterBy, filterValue);
+            var profesores = await _service.GetAllAsync(page, pageSize, orderBy, filterBy, filterValue);
             return Ok(profesores);
         }
         catch (Exception ex)
@@ -101,10 +103,10 @@ public class ProfesoresController : ControllerBase
         try
         {
             var result = await _service.DeleteAsync(id);
-            if (!result)
-                return NotFound($"Profesor con ID {id} no encontrado");
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
 
-            return NoContent();
+            return Ok(new { message = result.Message });
         }
         catch (Exception ex)
         {

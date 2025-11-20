@@ -18,14 +18,16 @@ public class NotasController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<NotaDto>>> GetAll(
+    public async Task<ActionResult<PagedResult<NotaDto>>> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
         [FromQuery] string? orderBy = null,
         [FromQuery] string? filterBy = null,
         [FromQuery] string? filterValue = null)
     {
         try
         {
-            var notas = await _service.GetAllAsync(orderBy, filterBy, filterValue);
+            var notas = await _service.GetAllAsync(page, pageSize, orderBy, filterBy, filterValue);
             return Ok(notas);
         }
         catch (Exception ex)

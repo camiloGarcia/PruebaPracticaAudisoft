@@ -1,35 +1,52 @@
 <div class="container mt-5">
   <div class="text-center">
-    <h1 class="display-4">Sistema de Gestión Académica</h1>
-    <p class="lead">Prueba Técnica - .NET Developer</p>
+    <h1 class="display-3 fw-bold text-primary">
+      <i class="bi bi-mortarboard-fill"></i> Sistema de Gestión Académica
+    </h1>
+    <p class="lead text-secondary">Prueba Técnica - .NET Developer</p>
     <hr class="my-4">
-    <p>Seleccione una opción del menú para comenzar</p>
+    <p class="fs-5">Seleccione una opción del menú para comenzar</p>
     
-    <div class="row mt-5">
+    <div class="row mt-5 g-4">
       <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Estudiantes</h5>
-            <p class="card-text">Gestión completa de estudiantes</p>
-            <a routerLink="/estudiantes" class="btn btn-primary">Ir a Estudiantes</a>
+        <div class="card shadow-lg border-primary h-100 hover-card">
+          <div class="card-body text-center p-4">
+            <div class="mb-3">
+              <i class="bi bi-people-fill text-primary" style="font-size: 4rem;"></i>
+            </div>
+            <h5 class="card-title fw-bold">Estudiantes</h5>
+            <p class="card-text text-muted">Gestión completa de estudiantes con validación de integridad</p>
+            <a routerLink="/estudiantes" class="btn btn-primary btn-lg mt-3">
+              <i class="bi bi-arrow-right-circle"></i> Ir a Estudiantes
+            </a>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Profesores</h5>
-            <p class="card-text">Gestión completa de profesores</p>
-            <a routerLink="/profesores" class="btn btn-primary">Ir a Profesores</a>
+        <div class="card shadow-lg border-success h-100 hover-card">
+          <div class="card-body text-center p-4">
+            <div class="mb-3">
+              <i class="bi bi-person-badge-fill text-success" style="font-size: 4rem;"></i>
+            </div>
+            <h5 class="card-title fw-bold">Profesores</h5>
+            <p class="card-text text-muted">Gestión completa de profesores con validación de integridad</p>
+            <a routerLink="/profesores" class="btn btn-success btn-lg mt-3">
+              <i class="bi bi-arrow-right-circle"></i> Ir a Profesores
+            </a>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Notas</h5>
-            <p class="card-text">Gestión completa de notas</p>
-            <a routerLink="/notas" class="btn btn-primary">Ir a Notas</a>
+        <div class="card shadow-lg border-info h-100 hover-card">
+          <div class="card-body text-center p-4">
+            <div class="mb-3">
+              <i class="bi bi-journal-text text-info" style="font-size: 4rem;"></i>
+            </div>
+            <h5 class="card-title fw-bold">Notas</h5>
+            <p class="card-text text-muted">Gestión completa de notas académicas</p>
+            <a routerLink="/notas" class="btn btn-info text-white btn-lg mt-3">
+              <i class="bi bi-arrow-right-circle"></i> Ir a Notas
+            </a>
           </div>
         </div>
       </div>

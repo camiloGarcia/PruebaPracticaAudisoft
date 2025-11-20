@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EstudianteService } from '../../services/estudiante.service';
 import { Estudiante, CreateEstudiante } from '../../models/estudiante.model';
+import { PagedResult } from '../../models/common.model';
 
 @Component({
   selector: 'app-estudiantes',
@@ -17,6 +18,17 @@ export class Estudiantes implements OnInit {
   showForm = false;
   filterValue = '';
   
+  // Paginación
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+  
+  // Mensajes toast
+  showToast = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' | 'info' = 'success';
+  
   formData: CreateEstudiante = {
     nombre: ''
   };
@@ -28,21 +40,54 @@ export class Estudiantes implements OnInit {
   }
 
   loadEstudiantes(): void {
-    this.estudianteService.getAll().subscribe({
-      next: (data) => this.estudiantes = data,
-      error: (error) => console.error('Error al cargar estudiantes:', error)
+    this.estudianteService.getAll(this.currentPage, this.pageSize).subscribe({
+      next: (result: PagedResult<Estudiante>) => {
+        this.estudiantes = result.data;
+        this.currentPage = result.currentPage;
+        this.pageSize = result.pageSize;
+        this.totalItems = result.totalItems;
+        this.totalPages = result.totalPages;
+      },
+      error: (error) => {
+        console.error('Error al cargar estudiantes:', error);
+        this.showToastMessage('Error al cargar estudiantes', 'error');
+      }
     });
   }
 
   filterEstudiantes(): void {
     if (this.filterValue.trim()) {
-      this.estudianteService.getAll('nombre', 'nombre', this.filterValue).subscribe({
-        next: (data) => this.estudiantes = data,
-        error: (error) => console.error('Error al filtrar:', error)
+      this.estudianteService.getAll(this.currentPage, this.pageSize, undefined, 'nombre', this.filterValue).subscribe({
+        next: (result: PagedResult<Estudiante>) => {
+          this.estudiantes = result.data;
+          this.currentPage = result.currentPage;
+          this.pageSize = result.pageSize;
+          this.totalItems = result.totalItems;
+          this.totalPages = result.totalPages;
+        },
+        error: (error) => {
+          console.error('Error al filtrar:', error);
+          this.showToastMessage('Error al filtrar estudiantes', 'error');
+        }
       });
     } else {
       this.loadEstudiantes();
     }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      if (this.filterValue.trim()) {
+        this.filterEstudiantes();
+      } else {
+        this.loadEstudiantes();
+      }
+    }
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   openCreateForm(): void {
@@ -68,7 +113,7 @@ export class Estudiantes implements OnInit {
 
   saveEstudiante(): void {
     if (!this.formData.nombre.trim()) {
-      alert('El nombre es requerido');
+      this.showToastMessage('El nombre es requerido', 'error');
       return;
     }
 
@@ -79,28 +124,56 @@ export class Estudiantes implements OnInit {
       };
       this.estudianteService.update(this.selectedEstudiante.id, updatedEstudiante).subscribe({
         next: () => {
+          this.showToastMessage('Estudiante actualizado exitosamente', 'success');
           this.loadEstudiantes();
           this.closeForm();
         },
-        error: (error) => console.error('Error al actualizar:', error)
+        error: (error) => {
+          console.error('Error al actualizar:', error);
+          this.showToastMessage('Error al actualizar estudiante', 'error');
+        }
       });
     } else {
       this.estudianteService.create(this.formData).subscribe({
         next: () => {
+          this.showToastMessage('Estudiante creado exitosamente', 'success');
           this.loadEstudiantes();
           this.closeForm();
         },
-        error: (error) => console.error('Error al crear:', error)
+        error: (error) => {
+          console.error('Error al crear:', error);
+          this.showToastMessage('Error al crear estudiante', 'error');
+        }
       });
     }
   }
 
   deleteEstudiante(id: number): void {
-    if (confirm('¿Está seguro de eliminar este estudiante?')) {
+    if (confirm('¿Está seguro de que desea eliminar este estudiante?')) {
       this.estudianteService.delete(id).subscribe({
-        next: () => this.loadEstudiantes(),
-        error: (error) => console.error('Error al eliminar:', error)
+        next: (response) => {
+          this.showToastMessage(response.message, 'success');
+          this.loadEstudiantes();
+        },
+        error: (error) => {
+          console.error('Error al eliminar:', error);
+          const message = error.error?.message || 'Error al eliminar estudiante';
+          this.showToastMessage(message, 'error');
+        }
       });
     }
+  }
+
+  showToastMessage(message: string, type: 'success' | 'error' | 'info'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.showToast = true;
+    setTimeout(() => {
+      this.showToast = false;
+    }, 4000);
+  }
+
+  closeToast(): void {
+    this.showToast = false;
   }
 }

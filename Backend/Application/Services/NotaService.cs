@@ -16,7 +16,7 @@ public class NotaService : INotaService
         _context = context;
     }
 
-    public async Task<IEnumerable<NotaDto>> GetAllAsync(string? orderBy = null, string? filterBy = null, string? filterValue = null)
+    public async Task<DTOs.PagedResult<NotaDto>> GetAllAsync(int page = 1, int pageSize = 10, string? orderBy = null, string? filterBy = null, string? filterValue = null)
     {
         var query = _context.Notas
             .Include(n => n.Profesor)
@@ -56,17 +56,31 @@ public class NotaService : INotaService
             query = query.OrderBy(n => n.Id);
         }
 
-        var notas = await query.ToListAsync();
-        return notas.Select(n => new NotaDto
+        var totalItems = await query.CountAsync();
+        var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        var notas = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new DTOs.PagedResult<NotaDto>
         {
-            Id = n.Id,
-            Nombre = n.Nombre,
-            IdProfesor = n.IdProfesor,
-            NombreProfesor = n.Profesor.Nombre,
-            IdEstudiante = n.IdEstudiante,
-            NombreEstudiante = n.Estudiante.Nombre,
-            Valor = n.Valor
-        });
+            Data = notas.Select(n => new NotaDto
+            {
+                Id = n.Id,
+                Nombre = n.Nombre,
+                IdProfesor = n.IdProfesor,
+                NombreProfesor = n.Profesor.Nombre,
+                IdEstudiante = n.IdEstudiante,
+                NombreEstudiante = n.Estudiante.Nombre,
+                Valor = n.Valor
+            }),
+            CurrentPage = page,
+            PageSize = pageSize,
+            TotalItems = totalItems,
+            TotalPages = totalPages
+        };
     }
 
     public async Task<NotaDto?> GetByIdAsync(int id)
