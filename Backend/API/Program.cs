@@ -7,25 +7,11 @@ using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Serilog para escribir en base de datos
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-var columnOptions = new ColumnOptions();
-columnOptions.Store.Remove(StandardColumn.Properties);
-columnOptions.Store.Add(StandardColumn.LogEvent);
-
+// Configurar Serilog inicialmente solo con consola
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.MSSqlServer(
-        connectionString: connectionString,
-        sinkOptions: new MSSqlServerSinkOptions
-        {
-            TableName = "Logs",
-            AutoCreateSqlTable = true
-        },
-        columnOptions: columnOptions)
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -66,6 +52,28 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         context.Database.Migrate();
         Log.Information("Migraciones aplicadas correctamente");
+        
+        // Ahora que la BD existe, reconfigurar Serilog para incluir SQL Server
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        var columnOptions = new ColumnOptions();
+        columnOptions.Store.Remove(StandardColumn.Properties);
+        columnOptions.Store.Add(StandardColumn.LogEvent);
+        
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.MSSqlServer(
+                connectionString: connectionString,
+                sinkOptions: new MSSqlServerSinkOptions
+                {
+                    TableName = "Logs",
+                    AutoCreateSqlTable = true
+                },
+                columnOptions: columnOptions)
+            .CreateLogger();
+            
+        Log.Information("Logging en base de datos configurado correctamente");
     }
     catch (Exception ex)
     {
