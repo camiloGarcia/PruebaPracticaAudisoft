@@ -10,8 +10,7 @@ obj/
 *.tmp
 
 # Entity Framework
-Migrations/
-!**/Migrations/*.cs
+# No ignorar carpeta Migrations completa, solo archivos específicos si es necesario
 
 # Logs
 Logs/
