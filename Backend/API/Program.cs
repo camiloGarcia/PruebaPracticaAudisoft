@@ -3,15 +3,29 @@ using PruebaPracticaAudisoft.Application.Interfaces;
 using PruebaPracticaAudisoft.Application.Services;
 using PruebaPracticaAudisoft.Infrastructure.Data;
 using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Serilog
+// Configurar Serilog para escribir en base de datos
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+var columnOptions = new ColumnOptions();
+columnOptions.Store.Remove(StandardColumn.Properties);
+columnOptions.Store.Add(StandardColumn.LogEvent);
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.MSSqlServer(
+        connectionString: connectionString,
+        sinkOptions: new MSSqlServerSinkOptions
+        {
+            TableName = "Logs",
+            AutoCreateSqlTable = true
+        },
+        columnOptions: columnOptions)
     .CreateLogger();
 
 builder.Host.UseSerilog();
